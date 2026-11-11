@@ -1,0 +1,8 @@
+# Trust order of trajectory (survey) sources.  A wellbore with surveys from several sources uses the most trusted class (lowest rank); see src/processing/wellhead.py `select_trusted_surveys`.
+# The ranks are an ASSUMPTION for Adam to set; a source that is not listed ranks last; a class with selectable: false is never selected as the path of a wellbore.
+classes:
+  regulator_survey:               {rank: 1, selectable: true,  note: "a survey filed with the regulator or the national data repository (none ingested yet)"}
+  operator_as_drilled_definitive: {rank: 2, selectable: true,  note: "the operator's final as-drilled path (EDM definitive survey, phase ACTUAL; a WITSML final trajectory)"}
+  operator_survey_runs:           {rank: 3, selectable: true,  note: "individual as-drilled survey runs of the operator's database"}
+  real_time_witsml:               {rank: 4, selectable: true,  note: "trajectory stations streamed while drilling"}
+  planned:                        {rank: 9, selectable: false, note: "plan and prototype paths are never the as-drilled path"}

@@ -1,0 +1,15 @@
+# How well a position is known: classes and display rules (src/processing/wellhead.py, docs/position_uncertainty.md).  Every limit here is an ASSUMPTION for Adam to set.
+classes:                     # one-sigma position uncertainty, the larger of the lateral and the vertical (weighted)
+  tight_m: 5.0               # up to this: tight
+  normal_m: 25.0             # up to this: normal; above: loose
+  vertical_weight: 1.0
+# Position quantities carry xy_sigma_m, z_sigma_m, sigma_basis and sigma_level.  sigma_level says what the number means:
+#   stated_1sigma, stated_2sigma   the source states the confidence level
+#   stated_unknown_level           the source gives a covariance but not its level (the EDM export of Volve): shown as "sigma, level not stated"
+#   modelled                       computed by the project from a tool error model (not built yet)
+#   none                           no uncertainty available: shown as "not stated", never as zero
+levels: [stated_1sigma, stated_2sigma, stated_unknown_level, modelled, none]
+display:
+  ellipse_on_maps: true      # a map of wellbores shows the horizontal ellipse (or a band) where sigma is stated
+  band_on_sections: true     # a depth section shows the vertical and lateral band; a hole without a stated sigma is drawn without a band and says so
+  label: "position uncertainty (1 sigma, level not stated)"

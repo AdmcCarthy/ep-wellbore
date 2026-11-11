@@ -1,0 +1,20 @@
+# Mud type classification (src/processing/mud_zones.py).  The Sodir mud type is free text with many spellings and brand names (AGENTS.md: a normalised column only through an explicit mapping in config).
+# A name is classified only when it states the base fluid (strong words) or by an ASSUMED common usage (assumed words); anything else is a brand name with no stated base fluid and is shown as such.
+# Checked in order; the first class with a matching word wins.  Words match whole words, case-insensitive.
+classes:
+  - class: synthetic_based
+    label: "Synthetic-based"
+    states_base_fluid: [synthetic, sbm, "synthetic based", "synthetic-based"]
+  - class: oil_based
+    label: "Oil-based"
+    states_base_fluid: ["oil based", "oil-based", obm, "oil", invert]
+    assumed_from_name: [innovert]                                                    # ASSUMPTION: a patent search snippet describes Innovert as an invert emulsion fluid; the patent was not read (a literature request, knowledge/requests.yaml; no knowledge entry rests on a snippet)
+  - class: water_based
+    label: "Water-based"
+    states_base_fluid: ["water based", "water-based", waterbased, "water base", water, seawater, wbm]
+    assumed_from_name: [spud, kcl, polymer, gel, bentonite]                          # ASSUMPTION: common usage of these names; to be confirmed by mud reports
+unknown_words: [dummy, unknown, "n/a", none]
+brand_label: "Brand name, base fluid not stated"
+unknown_label: "No usable entry"
+depth_bin_m: 500.0                                                                  # measured-depth bins used in the overview figures
+join_window_m: 150.0                                                                # a mud record within this measured depth above or at a casing shoe is linked to the shoe
