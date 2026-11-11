@@ -1,6 +1,6 @@
 # Status of ep-wellbore
 
-**State.** Cut out of the E&P data engine on the date of the first commit: 8 modules, 5 test files. The engine still holds the original code and remains the source of truth until it switches over to depend on this library.
+**State.** Cut out of the E&P data engine on the date of the first commit: 8 modules, 3 test files. The engine still holds the original code and remains the source of truth until it switches over to depend on this library.
 
 ## Decisions (Adam, 2026-11-11)
 * Domain libraries, one per topic; this one is `ep-wellbore`. Figures belong to their domain.
@@ -12,8 +12,6 @@
 * none.
 
 ## Tests that moved only in part (the rest use the engine and stay there)
-* `test_knowledge.py: kept 2, 10 stay in the engine`
-* `test_well_design_eras_effort.py: kept 4, 3 stay in the engine`
 * `test_wellhead_logic.py: kept 6, 1 stay in the engine`
 
 ## Couplings still to cut
