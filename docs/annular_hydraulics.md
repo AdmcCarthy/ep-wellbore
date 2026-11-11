@@ -1,6 +1,6 @@
 # Annular pressure, pressure loss, the datum and the water depth
 
-Code: `src/processing/annular_hydraulics.py` (pure functions), tests `tests/test_annular_hydraulics.py`, notebook `25_annular_pressure_datum` (a primer for geoscientists), knowledge `knowledge/annular_hydraulics.yaml`.
+Code: `annular_hydraulics` (pure functions), tests `tests/test_annular_hydraulics.py`, notebook `25_annular_pressure_datum` (a primer for geoscientists), knowledge `knowledge/annular_hydraulics.yaml`.
 
 ## 1. Terms
 
@@ -24,7 +24,7 @@ Code: `src/processing/annular_hydraulics.py` (pure functions), tests `tests/test
 `EMW_RT = p / (g (z + rt))` against `EMW_MSL = p / (g z)`: the relative difference is `rt / (z + rt)`.
 
 * Header `rt_elev_m` (9318 wellbores, all with basis `KB`): 5 % / 50 % / 95 % percentiles 3.3 / 32 / 78 m, maximum 85 m. Fixed platforms (Gullfaks, Statfjord) stand at 78-85 m.
-* For a 1.5 sg mud at 2500 m the offset is 0.002 sg (RT 3 m), 0.019 (32 m), 0.034 (58 m), 0.049 sg (84 m): comparable with a 0.05 sg window margin only for a tall platform and a shallow section, and zero if the datum is stated and converted with the header value (what notebooks 22-25 do).
+* For a 1.5 sg mud at 2500 m the offset is 0.002 sg (RT 3 m), 0.019 (32 m), 0.034 (58 m), 0.049 sg (84 m): comparable with a 0.05 sg window margin only for a tall platform and a shallow section, and zero if the datum is stated and converted with the header value (what the analysis notebooks-25 do).
 * The rig type is not in the open data; the RT per facility name is in the notebook. The KB / RT difference of the header is not given (an ASSUMPTION of a few metres: 0.003 sg for 5 m at 2500 m) and is not resolved. **Conclusion: stating the datum matters, the rig type and KB / RT difference do not.**
 
 ## 4. Does the water depth matter, and from where?

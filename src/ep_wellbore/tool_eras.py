@@ -1,6 +1,6 @@
-"""Does the age of the tool or practice matter for the uncertainty of a measurement?  A hypothesis test per data type, with the evidence kept apart from the decision (src/knowledge/verify.py).
+"""Does the age of the tool or practice matter for the uncertainty of a measurement?  A hypothesis test per data type, with the evidence kept apart from the decision.
 
-Hypothesis (Adam, 2026-11-05): measurements and tools have improved over time, so older measurements carry more uncertainty than newer ones, but this depends on the data type: not all
+Hypothesis (decision of 2026-11-05): measurements and tools have improved over time, so older measurements carry more uncertainty than newer ones, but this depends on the data type: not all
 leak-off tests are the same, it depends on how the test was executed AND on the tool.  The open data carry no tool or contractor field, so the DATE of the well is the only proxy for the tool
 generation and the practice: this is a proxy for both, not a tool effect.  The test therefore reads 'did the indicator change with the year the well was drilled', never 'the tool causes it'.
 
@@ -22,7 +22,7 @@ import pandas as pd
 
 from ep_physics_base import stats as kv
 
-WINDOW_YEARS, ANCHOR = 5, 1965          # the project's 5-year windows (AGENTS.md)
+WINDOW_YEARS, ANCHOR = 5, 1965          # the project's 5-year windows
 
 
 def window_label(year) -> str:

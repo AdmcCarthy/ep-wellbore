@@ -1,4 +1,4 @@
-"""Annular pressure loss, ECD, surge and swab, the datum and water-depth sensitivities and the riser margin.  Pure functions (docs/annular_hydraulics.md, notebook 25).
+"""Annular pressure loss, ECD, surge and swab, the datum and water-depth sensitivities and the riser margin.  Pure functions.
 
 A screening model for a reader who does not have the pump, rheology and string data of a real well: a Bingham plastic mud in laminar flow through a concentric annulus approximated by a parallel
 slot (valid when the pipe is not small against the hole, d_pipe / d_hole above about 0.3-0.5), with a Blasius screening estimate when the flow is turbulent.  It is NOT a hydraulics simulator:

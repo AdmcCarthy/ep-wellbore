@@ -1,4 +1,4 @@
-# How well a position is known: classes and display rules (src/processing/wellhead.py, docs/position_uncertainty.md).  Every limit here is an ASSUMPTION for Adam to set.
+# How well a position is known: classes and display rules.  Every limit here is an ASSUMPTION for the maintainer to set.
 classes:                     # one-sigma position uncertainty, the larger of the lateral and the vertical (weighted)
   tight_m: 5.0               # up to this: tight
   normal_m: 25.0             # up to this: normal; above: loose

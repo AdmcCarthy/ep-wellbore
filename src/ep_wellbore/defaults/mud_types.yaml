@@ -1,4 +1,4 @@
-# Mud type classification (src/processing/mud_zones.py).  The Sodir mud type is free text with many spellings and brand names (AGENTS.md: a normalised column only through an explicit mapping in config).
+# Mud type classification.  The Sodir mud type is free text with many spellings and brand names.
 # A name is classified only when it states the base fluid (strong words) or by an ASSUMED common usage (assumed words); anything else is a brand name with no stated base fluid and is shown as such.
 # Checked in order; the first class with a matching word wins.  Words match whole words, case-insensitive.
 classes:

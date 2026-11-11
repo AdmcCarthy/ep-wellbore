@@ -1,6 +1,6 @@
-"""Survey tools: how the positions of different tool classes and different times compare at the same depth, and what that says about quality (docs/volve_edm_structure.md section 14).
+"""Survey tools: how the positions of different tool classes and different times compare at the same depth, and what that says about quality.
 
-The hypothesis of notebook 28 is that older and cruder tools carry more uncertainty than newer, better ones.  A survey does not state its own true error, so the evidence here is RELATIVE: where two surveys of different tool
+The hypothesis of the analysis notebooks is that older and cruder tools carry more uncertainty than newer, better ones.  A survey does not state its own true error, so the evidence here is RELATIVE: where two surveys of different tool
 classes cover the same wellbore depth, how far apart are their positions, and does that grow with depth, with the age of the survey, or with the tool class?  Positions are compared at equal measured depth after the surveys
 are put on the same depth basis (the caller gives rows of `well_survey` on the RT basis).  A difference between two tools is not the error of either one; it is a LOWER BOUND of the larger of the two errors only when
 both are unbiased, and is reported as a difference."""

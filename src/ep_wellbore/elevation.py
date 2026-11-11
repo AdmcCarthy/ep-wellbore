@@ -1,4 +1,4 @@
-"""Which elevation do the depths of a wellbore refer to: the rotary table (RT) or the kelly bushing (KB)?  A monitored judgement that is re-evaluated every time a source is added (docs/volve_edm_structure.md section 13).
+"""Which elevation do the depths of a wellbore refer to: the rotary table (RT) or the kelly bushing (KB)?  A monitored judgement that is re-evaluated every time a source is added.
 
 Evidence comes in two kinds, in one long table (`well_elevation_evidence`: wellbore, source, kind, name used, value):
 * `named`: an elevation a source states and NAMES (Sodir: kelly bushing; the EDM export: rotary table and a planning default rig elevation; the daily drilling reports: kelly; WITSML geometry: air gap);

@@ -1,4 +1,4 @@
-"""Mud type as a categorical variable by depth zone, and the mud weight against the leak-off value at the casing shoes.  Pure functions (docs/knowledge_architecture.md section 6).
+"""Mud type as a categorical variable by depth zone, and the mud weight against the leak-off value at the casing shoes.  Pure functions.
 
 The Sodir mud type is free text (water based, WATERBASED, Glydril, Innovert, XP-07 ...).  A class is assigned only from an explicit mapping in config/mud_types.yaml: by words that state the base
 fluid, by words whose usual meaning is ASSUMED (spud, KCl, polymer), else the entry stays a brand name with no stated base fluid.  Depths are measured depth (the mud table has no vertical depth).
