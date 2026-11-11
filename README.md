@@ -2,7 +2,7 @@
 
 Trajectory by minimum curvature, wellhead and slot, survey tool error models, rotary-table and kelly-bushing elevation, annular hydraulics, well design, tool eras and mud classes.
 
-**Status: private, built public-ready.** The library follows the rules of a public one (no host-repository imports, no data, no private paths, an automated publication gate in `scripts/publication_gate.py`) and is published only when that gate passes. Licence: MIT with acknowledgement (`LICENSE`).
+**Status: public (2026-11-11).** The library follows the rules of a public one (no host-repository imports, no data, no private paths, an automated publication gate in `scripts/publication_gate.py`); the gate runs in CI and must stay at zero blockers. Licence: MIT with acknowledgement (`LICENSE`).
 
 ## Install
 
