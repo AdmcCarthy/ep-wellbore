@@ -29,7 +29,8 @@ def tvd_at_md(station_well, station_md, station_tvd, station_inclination_deg, st
               station_north=None, station_east=None) -> tuple[pd.DataFrame, list[dict]]:
     """TVD (and, when given, the north and east offsets) at the query depths, from the stations of the same wellbore key.
 
-    Returns one row per query, in the order given: `tvd_m` (and `north_m`, `east_m` when the station offsets are given), `inside_survey`, `interp_method` (`station` when the depth is a station,
+    Returns one row per query, in the order given: `tvd_m` (and `north_m`, `east_m` when the station offsets are given; they follow the azimuth reference of the stations, so grid offsets need grid
+    azimuths), `inclination_deg` and `azimuth_deg` at the depth (the tangent of the arc; empty between stations without angles), `inside_survey`, `interp_method` (`station` when the depth is a station,
     `minimum_curvature` between two stations with angles, `linear` between two stations without angles, empty outside), `bracket_md_m` (the length of the station interval the depth lies
     in: a coarse bracket is a weaker answer), `nearest_station_m` (distance to the nearest station of that interval) and `outside_by_m` (signed: negative above the first station, positive
     below the last, empty inside).  Stations with a missing depth or TVD, and repeated depths, are left out and counted.
@@ -56,7 +57,8 @@ def tvd_at_md(station_well, station_md, station_tvd, station_inclination_deg, st
     if (~keep).any():
         events.append(_event("md_to_tvd_station_repeated", (~keep).sum(), "info", "station at a depth already given for the wellbore: the first is used"))
     idx = idx[keep]
-    out = pd.DataFrame({"tvd_m": np.full(n_q, np.nan), "north_m": np.full(n_q, np.nan), "east_m": np.full(n_q, np.nan), "inside_survey": np.zeros(n_q, dtype=bool),
+    out = pd.DataFrame({"tvd_m": np.full(n_q, np.nan), "north_m": np.full(n_q, np.nan), "east_m": np.full(n_q, np.nan), "inclination_deg": np.full(n_q, np.nan), "azimuth_deg": np.full(n_q, np.nan),
+                        "inside_survey": np.zeros(n_q, dtype=bool),
                         "interp_method": np.full(n_q, "", dtype=object), "bracket_md_m": np.full(n_q, np.nan), "nearest_station_m": np.full(n_q, np.nan), "outside_by_m": np.full(n_q, np.nan)})
     if not len(idx) or not n_q:
         out["outside_by_m"] = np.nan
@@ -79,7 +81,7 @@ def tvd_at_md(station_well, station_md, station_tvd, station_inclination_deg, st
 
     # ---- at a station: the station's own values --------------------------------------------------------------------------------------------------------------------------------
     e = np.flatnonzero(exact)
-    out.loc[e, ["tvd_m", "north_m", "east_m"]] = np.column_stack([stvd[ic[e]], snorth[ic[e]], seast[ic[e]]])
+    out.loc[e, ["tvd_m", "north_m", "east_m", "inclination_deg", "azimuth_deg"]] = np.column_stack([stvd[ic[e]], snorth[ic[e]], seast[ic[e]], sinc[ic[e]], sazi[ic[e]]])
     out.loc[e, "interp_method"] = "station"
     out.loc[e, "nearest_station_m"] = 0.0
 
@@ -116,6 +118,8 @@ def tvd_at_md(station_well, station_md, station_tvd, station_inclination_deg, st
         out.loc[b, "tvd_m"] = np.where(angles, stvd[a] + d_tvd, linear_tvd)
         out.loc[b, "north_m"] = np.where(angles, snorth[a] + d_north, snorth[a] + s * (snorth[c] - snorth[a]))
         out.loc[b, "east_m"] = np.where(angles, seast[a] + d_east, seast[a] + s * (seast[c] - seast[a]))
+        out.loc[b, "inclination_deg"] = np.where(angles, np.degrees(i_s), np.nan)                      # the angles at the depth: the tangent of the arc there
+        out.loc[b, "azimuth_deg"] = np.where(angles, np.degrees(a_s) % 360.0, np.nan)
         out.loc[b, "interp_method"] = np.where(angles, "minimum_curvature", "linear")
         out.loc[b, "bracket_md_m"] = dmd
         out.loc[b, "nearest_station_m"] = np.minimum(length, dmd - length)
@@ -136,4 +140,21 @@ def tvd_at_md(station_well, station_md, station_tvd, station_inclination_deg, st
         events.append(_event("md_to_tvd_outside_survey", outside.sum(), "info", f"{int(has_survey.sum()):,} of them in a wellbore with a survey (above the first or below the last station): left empty, never extrapolated; "
                              f"{int((outside & ~has_survey).sum()):,} in a wellbore with no survey"))
     out["interp_method"] = out["interp_method"].astype("category")
+    return out, events
+
+
+def interpolate_along_md(station_well, station_md, station_values: dict, query_well, query_md) -> tuple[pd.DataFrame, list[dict]]:
+    """Linear interpolation along the hole of quantities that are not geometry (an uncertainty, a sigma): the same station rules as `tvd_at_md` (the wellbore's own stations, nothing
+    extrapolated, `inside_survey` and `outside_by_m` returned), one column per entry of `station_values`.  A station with a missing value is left out of that column."""
+    n_s = len(station_md)
+    nan = np.full(n_s, np.nan)
+    frames, events = [], []
+    for name, values in station_values.items():
+        res, more = tvd_at_md(station_well, station_md, values, nan, nan, query_well, query_md)
+        frames.append(res[["tvd_m"]].rename(columns={"tvd_m": name}))
+        events += more
+        shape = res
+    out = pd.concat(frames, axis=1) if frames else pd.DataFrame(index=range(len(query_md)))
+    if frames:
+        out["inside_survey"], out["outside_by_m"] = shape["inside_survey"].to_numpy(), shape["outside_by_m"].to_numpy()
     return out, events

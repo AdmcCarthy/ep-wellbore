@@ -3,7 +3,7 @@ import time
 
 import numpy as np
 
-from ep_wellbore.md_to_tvd import tvd_at_md
+from ep_wellbore.md_to_tvd import interpolate_along_md, tvd_at_md
 from ep_wellbore.trajectory import minimum_curvature
 
 R = 500.0                                                                    # a build section on a circular arc in one plane: inclination = md / R, TVD = R sin(md / R)
@@ -28,6 +28,15 @@ def test_the_position_in_the_plane_follows_the_arc_too():
     north = R * (1 - np.cos(md / R))
     out, _ = tvd_at_md(np.ones(2), md, tvd, inc, azi, [1], [200.0], station_north=north, station_east=np.zeros(2))
     assert abs(out["north_m"].iloc[0] - R * (1 - np.cos(200.0 / R))) < 1e-9 and abs(out["east_m"].iloc[0]) < 1e-9
+
+
+def test_the_angles_at_a_depth_are_the_tangent_of_the_arc_and_a_station_gives_its_own():
+    md, tvd, inc, azi = arc_stations([0.0, 400.0])
+    out, _ = tvd_at_md(np.ones(2), md, tvd, inc, azi, [1, 1], [200.0, 400.0])
+    assert abs(out["inclination_deg"].iloc[0] - np.degrees(200.0 / R)) < 1e-9 and abs(out["azimuth_deg"].iloc[0]) < 1e-9
+    assert out["inclination_deg"].iloc[1] == inc[1]
+    wrap, _ = tvd_at_md([1, 1], [0.0, 100.0], [0.0, 10.0], [10.0, 10.0], [350.0, 10.0], [1], [50.0])
+    assert abs(wrap["azimuth_deg"].iloc[0] - 0.0) < 1e-6 or abs(wrap["azimuth_deg"].iloc[0] - 360.0) < 1e-6          # through north, not the long way round
 
 
 def test_a_station_returns_its_own_values_and_the_result_agrees_with_minimum_curvature_on_a_dense_survey():
@@ -86,3 +95,8 @@ def test_a_large_query_over_many_wellbores_is_fast():
     out, _ = tvd_at_md(sw, md.ravel(), st_tvd, inc.ravel(), azi.ravel(), qw, qm)
     seconds = time.perf_counter() - start
     assert seconds < 10.0 and out["inside_survey"].any() and (~out["inside_survey"]).any(), seconds
+
+
+def test_a_sigma_along_the_hole_is_interpolated_linearly_with_the_same_outside_rule():
+    out, _ = interpolate_along_md([1, 1], [0.0, 100.0], {"xy_sigma_m": np.array([2.0, 6.0])}, [1, 1, 2], [25.0, 150.0, 25.0])
+    assert out["xy_sigma_m"].iloc[0] == 3.0 and np.isnan(out["xy_sigma_m"].iloc[1]) and np.isnan(out["xy_sigma_m"].iloc[2]) and out["inside_survey"].tolist() == [True, False, False]
