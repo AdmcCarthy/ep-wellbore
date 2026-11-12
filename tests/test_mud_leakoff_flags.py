@@ -38,3 +38,8 @@ def test_oil_and_synthetic_mud_give_a_low_direction_and_an_unknown_test_type_is_
 def test_without_the_section_every_row_is_not_assessed_and_missing_values_do_not_raise():
     flags, _ = mz.leakoff_mud_flags(pd.Series([None, "LOT"], dtype="string"), pd.Series(["water_based", None], dtype="string"), {})
     assert list(flags) == ["not_assessed", "not_assessed"]
+
+
+def test_a_fit_is_not_affected_even_when_no_mud_record_is_near():
+    flags, _ = mz.leakoff_mud_flags(pd.Series(["FIT", "LOT"]), pd.Series([None, None], dtype="string"), CFG)
+    assert list(flags) == ["not_affected", "no_mud_record"]

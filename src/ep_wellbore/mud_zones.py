@@ -105,10 +105,10 @@ def leakoff_mud_flags(test_type: pd.Series, mud_class: pd.Series, cfg: dict[str,
     pairs = pd.DataFrame({"t": types, "c": classes}).drop_duplicates()
     table = {}
     for t, c in zip(pairs["t"], pairs["c"]):
-        if c == "":
-            rule = spec.get("no_mud_record", fallback)
-        elif t in (spec.get("not_affected_tests") or []):
+        if t in (spec.get("not_affected_tests") or []):                                           # a FIT is not affected, with or without a mud record
             rule = spec.get("not_affected", fallback)
+        elif c == "":
+            rule = spec.get("no_mud_record", fallback)
         elif t in (spec.get("leak_off_tests") or []):
             rule = (spec.get("by_class") or {}).get(c, spec.get("mud_base_unknown", fallback))
         else:
