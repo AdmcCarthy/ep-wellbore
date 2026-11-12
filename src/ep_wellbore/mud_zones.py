@@ -85,8 +85,37 @@ def mud_vs_leakoff(mud: pd.DataFrame, lot: pd.DataFrame, cfg: dict[str, Any]) ->
     j = pd.merge_asof(L, m[["wellbore_id", "md_m", "mud_weight_sg", "mud_class", "mud_class_basis"]].astype({"md_m": float}), left_on="casing_depth_md_m", right_on="md_m",
                       by="wellbore_id", direction="backward", tolerance=win)
     j["lot_minus_mud_sg"] = j["lot_emw_sg"].astype(float) - j["mud_weight_sg"].astype(float)
-    cols = ["wellbore_id", "well_name", "casing_type", "casing_depth_md_m", "test_type", "lot_emw_sg", "md_m", "mud_weight_sg", "mud_class", "mud_class_basis", "lot_minus_mud_sg"]
+    j["leakoff_mud_flag"], j["leakoff_mud_note"] = leakoff_mud_flags(j["test_type"], j["mud_class"], cfg)
+    cols = ["wellbore_id", "well_name", "casing_type", "casing_depth_md_m", "test_type", "lot_emw_sg", "md_m", "mud_weight_sg", "mud_class", "mud_class_basis", "lot_minus_mud_sg",
+            "leakoff_mud_flag", "leakoff_mud_note"]
     return j[cols].rename(columns={"md_m": "mud_record_md_m"}).reset_index(drop=True)
+
+
+def leakoff_mud_flags(test_type: pd.Series, mud_class: pd.Series, cfg: dict[str, Any]) -> tuple[pd.Series, pd.Series]:
+    """Evidence flag and note for each shoe test from the type of test and the class of the mud near the shoe (`cfg['leakoff_bias']`).
+
+    The published practice (Al Ramadan and others 2024) is that the mud type does not affect an integrity test (FIT), and that a water-based mud raises the propagation pressure of a leak-off
+    test (filter cake) while an oil- or synthetic-based mud gives a lower one.  This is EVIDENCE shown next to the value: the equivalent mud density is never corrected.  The mud is the nearest
+    record at or above the shoe, which is not proof of the mud in the hole at the test (the mud may have been changed).  Without a `leakoff_bias` section every row is `not_assessed`.
+    """
+    spec = cfg.get("leakoff_bias") or {}
+    fallback = spec.get("not_assessed", {"flag": "not_assessed", "note": "no rule for this test type and mud"})
+    types = test_type.astype("string").fillna("").str.upper().str.strip().astype(object)
+    classes = mud_class.astype("string").fillna("").astype(object)                                  # "" = no mud record near the shoe
+    pairs = pd.DataFrame({"t": types, "c": classes}).drop_duplicates()
+    table = {}
+    for t, c in zip(pairs["t"], pairs["c"]):
+        if c == "":
+            rule = spec.get("no_mud_record", fallback)
+        elif t in (spec.get("not_affected_tests") or []):
+            rule = spec.get("not_affected", fallback)
+        elif t in (spec.get("leak_off_tests") or []):
+            rule = (spec.get("by_class") or {}).get(c, spec.get("mud_base_unknown", fallback))
+        else:
+            rule = fallback
+        table[(t, c)] = (rule["flag"], rule["note"])
+    keys = list(zip(types, classes))
+    return (pd.Series([table[k][0] for k in keys], index=test_type.index, dtype="string"), pd.Series([table[k][1] for k in keys], index=test_type.index, dtype="string"))
 
 
 def depth_class_table(mud: pd.DataFrame, cfg: dict[str, Any]) -> pd.DataFrame:

@@ -18,3 +18,16 @@ brand_label: "Brand name, base fluid not stated"
 unknown_label: "No usable entry"
 depth_bin_m: 500.0                                                                  # measured-depth bins used in the overview figures
 join_window_m: 150.0                                                                # a mud record within this measured depth above or at a casing shoe is linked to the shoe
+# Evidence next to a shoe test from the mud near the shoe (ep_wellbore.mud_zones.leakoff_mud_flags; knowledge entry ar24-mud-type, Al Ramadan and others 2024, p. 5 and Table 1).  PUBLISHED PRACTICE, not a correction:
+# the equivalent mud density is never changed.  The mud is the nearest record at or above the shoe within `join_window_m`, which is not proof of the mud in the hole at the test.
+leakoff_bias:
+  not_affected_tests: [FIT]                      # an integrity test is not affected by the mud type; its value is a lower bound of the fracture gradient
+  leak_off_tests: [LOT, XLOT, XLO]               # ASSUMPTION: XLO is read as XLOT (config/shoe_test_symbols.yaml); a leak-off value depends on the mud through the propagation pressure
+  not_affected: {flag: not_affected, note: "An integrity test (FIT) is not affected by the mud type (Al Ramadan and others 2024)."}
+  by_class:
+    water_based: {flag: water_based_high, note: "Water-based mud: filter cake raises the fracture propagation pressure, so a leak-off value is likely high-biased and the tensile strength under-estimated."}
+    oil_based: {flag: non_aqueous_low, note: "Oil-based mud gives a lower propagation pressure than water-based mud; compare only with leak-off values in the same class of mud."}
+    synthetic_based: {flag: non_aqueous_low, note: "Synthetic-based mud gives a lower propagation pressure than water-based mud; compare only with leak-off values in the same class of mud."}
+  mud_base_unknown: {flag: mud_base_unknown, note: "The mud name near the shoe does not state its base fluid, so no direction of bias is given."}
+  no_mud_record: {flag: no_mud_record, note: "No mud record at or above the shoe within the join window."}
+  not_assessed: {flag: not_assessed, note: "No published rule for this type of test."}
