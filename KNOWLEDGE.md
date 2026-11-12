@@ -16,6 +16,6 @@ Values without a registered item are ungraded: plain settings or assumptions tha
 
 | File | Values | Registered |
 | :--- | --: | --: |
-| `mud_types.yaml` | 6 | 0 |
+| `mud_types.yaml` | 22 | 0 |
 | `position_uncertainty.yaml` | 7 | 3 |
 | `survey_sources.yaml` | 15 | 0 |
