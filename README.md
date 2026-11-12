@@ -25,6 +25,7 @@ none
 | `annular_hydraulics` | Annular pressure loss, ECD, surge and swab, the datum and water-depth sensitivities and the riser margin.  Pure functions (docs/annular_hydraulics.md, |
 | `well_design` | Basic well design from the casing and leak-off table: strings, hole sizes, shoe depths, open hole below the shoe, and the telescoping check.  Pure fun |
 | `tool_eras` | Does the age of the tool or practice matter for the uncertainty of a measurement?  A hypothesis test per data type, with the evidence kept apart from  |
+| `depth_link` | Places depth observations (points and intervals) against depth intervals of the same wellbore with one boundary convention (top inclusive, base exclusive): a vectorised overlap join (500,000 observations against 36,000 intervals in about 0.3 s) that returns every overlap, so a sample that crosses two intervals is in both with its overlap. |
 | `mud_zones` | Mud type as a categorical variable by depth zone, and the mud weight against the leak-off value at the casing shoes.  Pure functions (docs/knowledge_a |
 
 Functions are pure: they take frames and parameters and return `(result, events)` where they change or flag data; nothing reads or writes files except the configuration loader.
